@@ -12,7 +12,7 @@ export default function Todo() {
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState<Todo[]>([]);
 
-  // Add Todos
+  // HANDLE:  Add Todos
   const handleTodo = (e: FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -31,7 +31,7 @@ export default function Todo() {
     }
   };
 
-  // Mark as done
+  // HANDLE: Mark as done
   const handleDone = (todoId: number) => {
     setTodos(
       todos?.map((todo) =>
@@ -39,6 +39,11 @@ export default function Todo() {
       )
     );
     console.log(todos);
+  };
+
+  // HANDLE: Delete Todos
+  const handleDelete = (todoId: number) => {
+    setTodos(todos?.filter((todo) => todo?.id !== todoId));
   };
   return (
     <section className="min-h-screen">
@@ -73,7 +78,7 @@ export default function Todo() {
         </div>
       </form>
       {/* All Todos */}
-      <ul className="container mx-auto mt-5">
+      <ul className="container grid gap-5 mx-auto mt-5">
         {todos?.map((todo) => (
           <div
             key={todo.id}
@@ -88,7 +93,9 @@ export default function Todo() {
                 className="checkbox border-orange-400 checked:border-indigo-800 [--chkbg:theme(colors.indigo.600)] [--chkfg:orange]"
               />
               {/* Todo Item */}
-              <li className={`text-xl ${todo?.done && "line-through"}`}>{todo?.todo}</li>
+              <li className={`text-xl ${todo?.done && "line-through"}`}>
+                {todo?.todo}
+              </li>
             </div>
             <div className="flex items-center gap-5">
               {/* Edit Button */}
@@ -98,6 +105,7 @@ export default function Todo() {
               {/* Delete Button */}
               <button
                 type="button"
+                onClick={() => handleDelete(todo?.id)}
                 className="rounded-md btn btn-outline btn-secondary"
               >
                 Delete
