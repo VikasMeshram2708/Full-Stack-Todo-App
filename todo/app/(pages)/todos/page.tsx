@@ -11,20 +11,37 @@ interface Todo {
 export default function Todo() {
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [editable, setEditable] = useState(false);
+  const [editId, setEditId] = useState<number | null>();
 
   // HANDLE:  Add Todos
   const handleTodo = (e: FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
-      setTodos([
-        ...todos,
-        {
-          id: Date.now(),
-          todo: todo,
-          done: false,
-        },
-      ]);
-      console.log(todo);
+
+      // If the editable is true
+      if (editable && editId) {
+        setTodos(
+          todos?.map((item) =>
+            item.id === editId ? { ...item, todo: todo } : item
+          )
+        );
+        // Set Editable to False
+        setEditable(false);
+        // Set EditId to null
+        setEditId(null);
+      } else {
+        setTodos([
+          ...todos,
+          {
+            id: Date.now(),
+            todo: todo,
+            done: false,
+          },
+        ]);
+        console.log(todo);
+      }
+      setTodo('');
     } catch (e) {
       const err = e as Error;
       return toast.error(err?.message);
@@ -44,6 +61,14 @@ export default function Todo() {
   // HANDLE: Delete Todos
   const handleDelete = (todoId: number) => {
     setTodos(todos?.filter((todo) => todo?.id !== todoId));
+  };
+
+  // HANDLE: Edit Todos
+  const handleEdit = (todoId: number) => {
+    setEditId(todoId);
+    setEditable((prev) => !prev);
+    const myTodo = todos?.find((i) => i.id === todoId);
+    setTodo(!editable ? (myTodo?.todo as string) : "");
   };
   return (
     <section className="min-h-screen">
@@ -73,7 +98,7 @@ export default function Todo() {
             type="submit"
             className="btn btn-md w-full btn-outline btn-accent font-semibold"
           >
-            Add ToDo
+            {editable ? "Save Edit" : "Add Todo"}
           </button>
         </div>
       </form>
@@ -99,7 +124,11 @@ export default function Todo() {
             </div>
             <div className="flex items-center gap-5">
               {/* Edit Button */}
-              <button type="button" className="rounded-md btn btn-error">
+              <button
+                onClick={() => handleEdit(todo?.id)}
+                type="button"
+                className="rounded-md btn btn-error"
+              >
                 Edit
               </button>
               {/* Delete Button */}
