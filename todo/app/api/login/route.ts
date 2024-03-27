@@ -52,7 +52,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json(
       {
         success: true,
-        message: "User Registred",
+        message: "User Logged In.",
       },
       {
         status: 201,

@@ -2,10 +2,12 @@
 import Link from "next/link";
 import { ChangeEvent, FormEvent, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { RiEyeFill, RiEyeCloseFill } from "react-icons/ri";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [toggleEye, setToggleEye] = useState(false);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     try {
@@ -60,10 +62,10 @@ export default function Login() {
         </div>
 
         {/* Password */}
-        <div className="grid gap-3">
+        <div className="grid gap-3 relative">
           <label htmlFor="password">Password</label>
           <input
-            type="text"
+            type={toggleEye ? "text" : "password"}
             name="password"
             value={password}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -72,6 +74,23 @@ export default function Login() {
             placeholder="Enter Password"
             className="input input-bordered"
           />
+          <div className="absolute right-3 bottom-3">
+            {toggleEye ? (
+              <RiEyeFill
+                onClick={() => setToggleEye((prev) => !prev)}
+                size={20}
+                color="white"
+                className="cursor-pointer"
+              />
+            ) : (
+              <RiEyeCloseFill
+                onClick={() => setToggleEye((prev) => !prev)}
+                size={20}
+                color="white"
+                className="cursor-pointer"
+              />
+            )}
+          </div>
         </div>
 
         {/* Button */}
@@ -82,7 +101,17 @@ export default function Login() {
           >
             Login
           </button>
-          <p className="mt-5">Not a User ? <span><Link href="/signup" className="hover:underline underline-offset-4">SignUp</Link></span></p>
+          <p className="mt-5">
+            Not a User ?{" "}
+            <span>
+              <Link
+                href="/signup"
+                className="hover:underline underline-offset-4"
+              >
+                SignUp
+              </Link>
+            </span>
+          </p>
         </div>
       </form>
       <Toaster />

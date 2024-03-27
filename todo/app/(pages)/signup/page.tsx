@@ -1,21 +1,33 @@
 "use client";
+import { UserSchema } from "@/models/User";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { RiEyeFill, RiEyeCloseFill } from "react-icons/ri";
+import { ZodError } from "zod";
 
 export default function SignUp() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [toggleEye, setToggleEye] = useState(false);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
+
       const data = {
         name,
         email,
         password,
       };
+
+      // Sanitize the Incoming Data
+      UserSchema.parse(data);
+      Promise.resolve();
+
       const response = await fetch("/api/signup", {
         method: "POST",
         headers: {
@@ -28,15 +40,18 @@ export default function SignUp() {
       if (!response.ok) {
         return toast.error(result?.message);
       }
-      console.log("result", result);
-      return toast.success(result?.message);
-    } catch (e) {
-      const err = e as Error;
-      return toast.error(err?.message);
-    } finally {
       setName("");
       setEmail("");
       setPassword("");
+      console.log("result", result);
+      router.refresh();
+      return router.push("/login");
+    } catch (e) {
+      const err = e as Error;
+      if (e instanceof ZodError) {
+        return toast.error(e?.errors[0]?.message);
+      }
+      return toast.error(err?.message);
     }
   };
 
@@ -77,10 +92,10 @@ export default function SignUp() {
         </div>
 
         {/* Password */}
-        <div className="grid gap-3">
+        <div className="grid gap-3 relative">
           <label htmlFor="password">Password</label>
           <input
-            type="text"
+            type={toggleEye ? "text" : "password"}
             name="password"
             value={password}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -89,6 +104,23 @@ export default function SignUp() {
             placeholder="Enter Password"
             className="input input-bordered"
           />
+          <div className="absolute right-3 bottom-3">
+            {toggleEye ? (
+              <RiEyeFill
+                onClick={() => setToggleEye((prev) => !prev)}
+                size={20}
+                color="white"
+                className="cursor-pointer"
+              />
+            ) : (
+              <RiEyeCloseFill
+                onClick={() => setToggleEye((prev) => !prev)}
+                size={20}
+                color="white"
+                className="cursor-pointer"
+              />
+            )}
+          </div>
         </div>
 
         {/* Button */}

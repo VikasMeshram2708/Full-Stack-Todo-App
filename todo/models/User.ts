@@ -1,19 +1,31 @@
-import * as z from 'zod';
+import * as z from "zod";
 
 export const UserSchema = z.object({
-  name: z.string().min(2).max(100),
+  name: z
+    .string()
+    .min(2, {
+      message: "Name must be 2 or more characters long.",
+    })
+    .max(100, {
+      message: "Name must be 5 or fewer characters long.",
+    }),
   email: z.string().email(),
-  password: z.string().min(5).max(100),
+  password: z.string().min(5).max(100, {
+    message: "Name must be 5 or fewer characters long.",
+  }),
 });
-
 
 // Login Schema
 export const LoginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(5).max(100),
+  password: z
+    .string()
+    .min(5, {
+      message: "Name must be 2 or more characters long.",
+    })
+    .max(100),
 });
 // Login Schema type
-export type LoginSchemaType = z.infer<typeof LoginSchema>
+export type LoginSchemaType = z.infer<typeof LoginSchema>;
 
-
-export type UserSchemaType = z.infer<typeof UserSchema>
+export type UserSchemaType = z.infer<typeof UserSchema>;
