@@ -6,6 +6,10 @@ export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const token = cookies().get("todoAuth")?.value;
 
+  // If the page is LOGIN and SIGNUP he doesn't have the token he can see the login page.
+  // if ((path === "/login" || path === "/signup") && !token) {
+  //   return NextResponse.next();
+  // }
   // If the Path is "Login" and has the token he/she shouldn't redirect to HOME.
   if (path === "/login" && token) {
     return NextResponse.redirect(new URL("/", request.nextUrl));
@@ -21,8 +25,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.nextUrl));
   }
 
-  // return NextResponse.next();
-  return NextResponse.redirect(new URL("/", request.url));
+  return NextResponse.next();
+  // return NextResponse.redirect(new URL("/", request.url));
 }
 
 export const config = {

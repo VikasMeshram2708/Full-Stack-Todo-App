@@ -4,4 +4,6 @@
 
 * [x] Add Button Disabled State on Login & SignUp Form.s
 
-* [ ] UPDATE : User Schema add isVerified & isAdmin fields.
+* [x] UPDATE : User Schema add isVerified & isAdmin fields.
+
+* [ ] ADD: Logout API.

@@ -21,6 +21,7 @@ export const UserSchema = z.object({
   isVerified: z.boolean().default(false),
   isAdmin: z.boolean().default(false),
 });
+export type UserSchemaType = z.infer<typeof UserSchema>;
 
 // Login Schema
 export const LoginSchema = z.object({
@@ -35,4 +36,9 @@ export const LoginSchema = z.object({
 // Login Schema type
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 
-export type UserSchemaType = z.infer<typeof UserSchema>;
+// Logout Schema
+export const LogoutSchema = z.object({
+  email: z.string().email(),
+});
+export type LogoutSchemaType = z.infer<typeof LogoutSchema>;
+
