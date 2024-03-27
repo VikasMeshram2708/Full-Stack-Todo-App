@@ -16,6 +16,9 @@ export const POST = async (req: NextRequest) => {
     LoginSchema.parse(reqBody);
     Promise.resolve();
 
+    // Connect to DB
+    await clientInstance.connect();
+
     // Check if the Email Exists OR not
     const userExist = await User.findOne({ email: reqBody.email });
 

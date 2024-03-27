@@ -40,7 +40,7 @@ export default function Login() {
       if (!response.ok) {
         return toast.error(result?.message);
       }
-      console.log("result", result);
+      // console.log("result", result);
 
       // RESET: Email & Password Input Field.
       setEmail("");
@@ -50,7 +50,8 @@ export default function Login() {
       router.refresh();
       setTimeout(() => {
         return router.push("/todos");
-      }, 3000);
+      }, 2500);
+      Promise.resolve();
     } catch (e) {
       const err = e as Error;
       return toast.error(err?.message);
