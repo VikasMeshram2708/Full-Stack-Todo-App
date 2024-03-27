@@ -2,7 +2,7 @@
 
 import { User } from "@/helpers/Db";
 import { UserSchema, UserSchemaType } from "@/models/User";
-import { MongoError, MongoServerError } from "mongodb";
+import { MongoServerError } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
