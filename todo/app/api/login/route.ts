@@ -5,6 +5,8 @@ import { LoginSchema, LoginSchemaType } from "@/models/User";
 import { MongoServerError } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -49,6 +51,23 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
+    /** *TODO: Create Token Data */
+    const payload = {
+      id: userExist._id,
+      name: userExist.name,
+      email: userExist.email,
+    };
+
+    // CREATE : Token
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+      expiresIn: "1d",
+    });
+
+    // Set Cookies
+    cookies().set("todoAuth", token, {
+      httpOnly: true,
+    });
+
     return NextResponse.json(
       {
         success: true,
@@ -82,6 +101,6 @@ export const POST = async (req: NextRequest) => {
     );
   } finally {
     await clientInstance.close();
-    console.log('Connection Released.')
+    console.log("Connection Released.");
   }
 };

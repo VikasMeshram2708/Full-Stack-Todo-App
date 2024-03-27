@@ -1,11 +1,13 @@
 "use client";
 import { LoginSchema } from "@/models/User";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { RiEyeFill, RiEyeCloseFill } from "react-icons/ri";
 
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [toggleEye, setToggleEye] = useState(false);
@@ -44,7 +46,11 @@ export default function Login() {
       setEmail("");
       setPassword("");
 
-      return toast.success(result?.message);
+      toast.success(result?.message);
+      router.refresh();
+      setTimeout(() => {
+        return router.push("/todos");
+      }, 3000);
     } catch (e) {
       const err = e as Error;
       return toast.error(err?.message);
