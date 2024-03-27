@@ -1,23 +1,18 @@
 import { Todos, User, clientInstance } from "@/helpers/Db";
 import { MongoServerError, ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
-import { TodoSchema, TodoSchemaType } from "@/models/Todo";
 
 export const POST = async (req: NextRequest) => {
   try {
     const reqBody = await req.json();
 
-    const { done, todo, userId } = reqBody;
+    const { userId } = reqBody;
 
-    console.log("userid", userId);
+    // console.log("userid", userId);
 
     // Connect to DB
     await clientInstance.connect();
-
-    // check if the userId is valid or not
-    const userExist = await User.findOne({
-      _id: new ObjectId(userId),
-    });
+    const userExist = await User.findOne({ _id: new ObjectId(userId) });
 
     if (!userExist) {
       return NextResponse.json(
@@ -31,28 +26,18 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    // Sanitize the Incoming data
-    TodoSchema.parse({ todo, done });
-    await Promise.resolve();
-
-    // Create Todo Object
-    const userTodos = {
-      todo: reqBody.todo,
-      done: reqBody.done,
-      userId: userExist._id,
-      created_at: new Date().toDateString(),
-    };
-
     // Connect to DB
     await clientInstance.connect();
-    // Insert into DB
-    await Todos.insertOne(userTodos);
+
+    // Retrieve user Todos
+    const myTodos = await Todos.find({
+      userId: new ObjectId(userId),
+    }).toArray();
 
     return NextResponse.json(
       {
         success: true,
-        message: "Todo Saved",
-        data: reqBody,
+        data: myTodos,
       },
       {
         status: 201,
@@ -64,7 +49,7 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json(
         {
           success: false,
-          message: `Something went wrong. Failed to Save the Todo: ${e.errmsg}`,
+          message: `Something went wrong. Failed to retrieve the Todos: ${e.errmsg}`,
         },
         {
           status: 500,
@@ -74,7 +59,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json(
       {
         success: false,
-        message: `Something went wrong. Failed to Save the Tood: ${err?.message}`,
+        message: `Something went wrong. Failed to retrieve the Todos: ${err?.message}`,
       },
       {
         status: 500,
