@@ -13,6 +13,7 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [toggleEye, setToggleEye] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     try {
@@ -28,6 +29,9 @@ export default function SignUp() {
       UserSchema.parse(data);
       Promise.resolve();
 
+      // Set Button Disabled to true
+      setButtonDisabled(true);
+
       const response = await fetch("/api/signup", {
         method: "POST",
         headers: {
@@ -40,18 +44,29 @@ export default function SignUp() {
       if (!response.ok) {
         return toast.error(result?.message);
       }
+      toast.success(result?.message);
+
+      // RESET : Input Fileds
       setName("");
       setEmail("");
       setPassword("");
+
       console.log("result", result);
       router.refresh();
-      return router.push("/login");
+      setTimeout(() => {
+        return router.push("/login");
+      }, 3000);
     } catch (e) {
       const err = e as Error;
       if (e instanceof ZodError) {
         return toast.error(e?.errors[0]?.message);
       }
       return toast.error(err?.message);
+    } finally {
+      // RESET : Button Disabled false
+      setTimeout(() => {
+        setButtonDisabled(false);
+      }, 2000);
     }
   };
 
@@ -126,10 +141,11 @@ export default function SignUp() {
         {/* Button */}
         <div className="mt-5">
           <button
+            disabled={buttonDisabled}
             type="submit"
             className="btn btn-md w-full btn-outline btn-accent font-semibold"
           >
-            Sign Up
+            {buttonDisabled ? "Loading..." : "Sign Up"}
           </button>
           <p className="mt-5">
             Already a User ?{" "}

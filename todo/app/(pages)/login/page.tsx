@@ -1,4 +1,5 @@
 "use client";
+import { LoginSchema } from "@/models/User";
 import Link from "next/link";
 import { ChangeEvent, FormEvent, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -8,6 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [toggleEye, setToggleEye] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     try {
@@ -16,6 +18,14 @@ export default function Login() {
         email,
         password,
       };
+
+      // Sanitize the Incoming Data
+      LoginSchema.parse(data);
+      Promise.resolve();
+
+      // Set Loading State
+      setButtonDisabled(true);
+
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -29,13 +39,20 @@ export default function Login() {
         return toast.error(result?.message);
       }
       console.log("result", result);
+
+      // RESET: Email & Password Input Field.
+      setEmail("");
+      setPassword("");
+
       return toast.success(result?.message);
     } catch (e) {
       const err = e as Error;
       return toast.error(err?.message);
     } finally {
-      setEmail("");
-      setPassword("");
+      // RESET : Button Disabled State
+      setTimeout(() => {
+        setButtonDisabled(false);
+      }, 2000);
     }
   };
 
@@ -96,10 +113,11 @@ export default function Login() {
         {/* Button */}
         <div className="mt-5">
           <button
+            disabled={buttonDisabled}
             type="submit"
             className="btn btn-md w-full btn-outline btn-accent font-semibold"
           >
-            Login
+            {buttonDisabled ? "Loading..." : "Login"}
           </button>
           <p className="mt-5">
             Not a User ?{" "}

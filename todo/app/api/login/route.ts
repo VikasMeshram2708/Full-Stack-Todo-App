@@ -1,7 +1,7 @@
 // Todo: Sign In Route
 
-import { User } from "@/helpers/Db";
-import { LoginSchema, LoginSchemaType, UserSchema } from "@/models/User";
+import { User, clientInstance } from "@/helpers/Db";
+import { LoginSchema, LoginSchemaType } from "@/models/User";
 import { MongoServerError } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -80,5 +80,8 @@ export const POST = async (req: NextRequest) => {
         status: 500,
       }
     );
+  } finally {
+    await clientInstance.close();
+    console.log('Connection Released.')
   }
 };

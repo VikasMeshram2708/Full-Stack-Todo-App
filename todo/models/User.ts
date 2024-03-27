@@ -10,9 +10,16 @@ export const UserSchema = z.object({
       message: "Name must be 5 or fewer characters long.",
     }),
   email: z.string().email(),
-  password: z.string().min(5).max(100, {
-    message: "Name must be 5 or fewer characters long.",
-  }),
+  password: z
+    .string()
+    .min(5, {
+      message: "Password must be 5 or more characters long.",
+    })
+    .max(100, {
+      message: "Password must be 5 or fewer characters long.",
+    }),
+  isVerified: z.boolean().default(false),
+  isAdmin: z.boolean().default(false),
 });
 
 // Login Schema

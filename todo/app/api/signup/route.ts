@@ -1,6 +1,6 @@
 // Todo: Sign UP Route
 
-import { User } from "@/helpers/Db";
+import { User, clientInstance } from "@/helpers/Db";
 import { UserSchema, UserSchemaType } from "@/models/User";
 import { MongoServerError } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
@@ -38,7 +38,9 @@ export const POST = async (req: NextRequest) => {
       name: reqBody.name,
       email: reqBody.email,
       password: hashedPassword,
-      created_at: new Date().toLocaleDateString()
+      isAdmin: false,
+      isVerified: false,
+      created_at: new Date().toLocaleDateString(),
     };
 
     await User.insertOne(newUser);
@@ -74,5 +76,8 @@ export const POST = async (req: NextRequest) => {
         status: 500,
       }
     );
+  } finally {
+    await clientInstance.close();
+    console.log('Connection Released.')
   }
 };
