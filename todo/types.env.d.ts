@@ -13,3 +13,11 @@ interface UserDetails {
   isVerified: boolean;
   isAdmin: boolean;
 }
+
+interface Todo {
+  _id: string;
+  todo: string;
+  done: boolean;
+  userId: string;
+  created_at: string;
+}

@@ -1,17 +1,42 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { TodoSchemaType } from "@/models/Todo";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
-interface Todo {
+interface TheTodo {
   todo: string;
   done: boolean;
 }
 export default function Todo() {
+  const router = useRouter();
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState<Todo[]>([]);
   const [editable, setEditable] = useState(false);
   const [editId, setEditId] = useState<number | null>();
+
+  // GET : TODOS
+  const GetTodos = async () => {
+    try {
+      const response = await fetch("/api/myTodos");
+      const result = await response.json();
+      if (!response.ok) {
+        return toast.error(result?.message);
+      }
+      console.log(result?.data);
+      // console.log(result?.data?.reverse())
+      setTodos(result?.data);
+      return response;
+    } catch (error) {
+      return toast.error(
+        "Something went wrong. Failed to retrieve the Todos. Please try again after some time"
+      );
+    }
+  };
+  useEffect(() => {
+    GetTodos();
+  }, []);
 
   // HANDLE:  Add Todos
   const handleTodo = async (e: FormEvent<HTMLFormElement>) => {
@@ -21,32 +46,30 @@ export default function Todo() {
       if (!todo.trim()) {
         return toast.error("Todo is required.");
       }
-      setTodos([
-        ...todos,
-        {
-          todo: todo,
-          done: false,
-        },
-      ]);
-      // make the api request
-      const respose = await fetch("/api/todos", {
+
+      const todoData = {
+        done: false,
+        todo: todo,
+      };
+      const respose = await fetch("/api/addTodo", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(todos),
+        body: JSON.stringify(todoData),
       });
 
       const result = await respose.json();
-      
+
       if (!respose.ok) {
         return toast.error(result?.message);
       }
-      
+
       console.log(todo);
-      
+
       setTodo("");
-      return toast.success(result?.message);
+      toast.success(result?.message);
+      GetTodos();
     } catch (e) {
       const err = e as Error;
       return toast.error(err?.message);
@@ -64,9 +87,31 @@ export default function Todo() {
   // };
 
   // HANDLE: Delete Todos
-  // const handleDelete = (todoId: number) => {
-  //   setTodos(todos?.filter((todo) => todo?.id !== todoId));
-  // };
+  const handleDelete = async (todoId: string) => {
+    try {
+      const response = await fetch("/api/deleteTodo", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ todoId }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        return toast.error(result?.message);
+      }
+      toast.success(result?.mesage);
+      GetTodos();
+    } catch (error) {
+      return toast.error(
+        `Something went wrong. Failed to delete the todo. : ${
+          error instanceof Error && error?.message
+        }`
+      );
+    }
+    // setTodos(todos?.filter((todo) => todo?._id !== todoId));
+  };
 
   // HANDLE: Edit Todos
   // const handleEdit = (todoId: number) => {
@@ -109,9 +154,9 @@ export default function Todo() {
       </form>
       {/* All Todos */}
       <ul className="container grid gap-5 mx-auto mt-5">
-        {todos?.map((todo, index) => (
+        {todos?.map((todo) => (
           <div
-            key={index}
+            key={todo._id}
             className="shadow-base-300 shadow-lg bg-base-300  p-3  rounded-md flex items-center justify-between"
           >
             <div className="flex items-center gap-5">
@@ -139,7 +184,7 @@ export default function Todo() {
               {/* Delete Button */}
               <button
                 type="button"
-                // onClick={() => handleDelete(todo?.id)}
+                onClick={() => handleDelete(todo._id)}
                 className="rounded-md btn btn-outline btn-secondary"
               >
                 Delete

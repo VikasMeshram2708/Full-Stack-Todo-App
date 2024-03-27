@@ -1,14 +1,14 @@
 import { Todos, User, clientInstance } from "@/helpers/Db";
+import { DecodeToken } from "@/helpers/DecodeToken";
 import { MongoServerError, ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
-export const POST = async (req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
   try {
-    const reqBody = await req.json();
+    const data = DecodeToken();
 
-    const { userId } = reqBody;
-
-    // console.log("userid", userId);
+    // @ts-ignore
+    const userId = data?.id;
 
     // Connect to DB
     await clientInstance.connect();
@@ -34,10 +34,12 @@ export const POST = async (req: NextRequest) => {
       userId: new ObjectId(userId),
     }).toArray();
 
+    const todosList = myTodos.reverse();
+
     return NextResponse.json(
       {
         success: true,
-        data: myTodos,
+        data: todosList,
       },
       {
         status: 201,
@@ -70,3 +72,4 @@ export const POST = async (req: NextRequest) => {
     console.log("Connection Released.");
   }
 };
+

@@ -2,14 +2,17 @@ import { Todos, User, clientInstance } from "@/helpers/Db";
 import { MongoServerError, ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { TodoSchema, TodoSchemaType } from "@/models/Todo";
+import { DecodeToken } from "@/helpers/DecodeToken";
 
 export const POST = async (req: NextRequest) => {
   try {
     const reqBody = await req.json();
+    const data = DecodeToken();
 
-    const { done, todo, userId } = reqBody;
+    // @ts-ignore
+    const userId = data?.id;
 
-    console.log("userid", userId);
+    const { done, todo } = reqBody;
 
     // Connect to DB
     await clientInstance.connect();
