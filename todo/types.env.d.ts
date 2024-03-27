@@ -5,3 +5,11 @@ interface TokenData {
   iat: number;
   exp: number;
 }
+
+interface UserDetails {
+  id: string;
+  name: string;
+  email: string;
+  isVerified: boolean;
+  isAdmin: boolean;
+}

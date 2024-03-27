@@ -6,4 +6,6 @@
 
 * [x] UPDATE : User Schema add isVerified & isAdmin fields.
 
-* [ ] ADD: Logout API.
+* [x] ADD : Logout API.
+
+* [x] API to GET User Details 
