@@ -10,7 +10,7 @@ export default function Navbar() {
       </div>
       <div className="flex-none">
         <button className="btn btn-outline btn-ghost btn-md">
-          Sign Up / Login
+          <Link href="/login">Sign Up / Login</Link>
         </button>
       </div>
     </nav>
