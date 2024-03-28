@@ -11,7 +11,7 @@
 
 ## Steps to Follow
 
-* git clone [git@github.com:VikasMeshram2708/Full-Stack-Todo-App.git]
+* git clone [https://github.com/VikasMeshram2708/Full-Stack-Todo-App.git]
 
 * cd Full-Stack-Todo-App
 
