@@ -1,11 +1,20 @@
 ## Learning Authenticaion Using NextJs
 
-## TODO
 
-* [x] Add Button Disabled State on Login & SignUp Form.s
+## This application is a Basic Todo App written in Nextjs + TypeScript + Tailwind CSS
 
-* [x] UPDATE : User Schema add isVerified & isAdmin fields.
+## This application includes the CRUD operations for Todos (Create, React, Update & Delete).
 
-* [x] ADD : Logout API.
+## Usage 
 
-* [x] API to GET User Details 
+* User Needs to SignUP then login and he'll be redirect to todos page and then he'll be able to use the app.
+
+## Steps to Follow
+
+* git clone [git@github.com:VikasMeshram2708/Full-Stack-Todo-App.git]
+
+* cd Full-Stack-Todo-App
+
+* npm i 
+
+* npm run dev
