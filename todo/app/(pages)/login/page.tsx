@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { RiEyeFill, RiEyeCloseFill } from "react-icons/ri";
+import { ZodError } from "zod";
 
 export default function Login() {
   const router = useRouter();
@@ -23,7 +24,6 @@ export default function Login() {
 
       // Sanitize the Incoming Data
       LoginSchema.parse(data);
-      Promise.resolve();
 
       // Set Loading State
       setButtonDisabled(true);
@@ -54,6 +54,9 @@ export default function Login() {
       Promise.resolve();
     } catch (e) {
       const err = e as Error;
+      if(e instanceof ZodError) {
+        return toast.error(e?.errors[0].message)
+      }
       return toast.error(err?.message);
     } finally {
       // RESET : Button Disabled State

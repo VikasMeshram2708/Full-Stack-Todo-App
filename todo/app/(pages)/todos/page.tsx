@@ -14,7 +14,7 @@ export default function Todo() {
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState<Todo[]>([]);
   const [editable, setEditable] = useState(false);
-  const [editId, setEditId] = useState<number | null>();
+  const [editId, setEditId] = useState<string | null>();
 
   // GET : TODOS
   const GetTodos = async () => {
@@ -46,30 +46,43 @@ export default function Todo() {
       if (!todo.trim()) {
         return toast.error("Todo is required.");
       }
-
-      const todoData = {
-        done: false,
-        todo: todo,
-      };
-      const respose = await fetch("/api/addTodo", {
-        method: "POST",
+  
+      let todoId = editId;
+      const requestBody = editId && editable
+        ? { todo, todoId }
+        : { done: false, todo };
+  
+      const requestOptions = {
+        method: editId && editable ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(todoData),
-      });
-
-      const result = await respose.json();
-
-      if (!respose.ok) {
+        body: JSON.stringify(requestBody),
+      };
+  
+      let response, result;
+  
+      if (editId && editable) {
+        response = await fetch("/api/editTodo", requestOptions);
+      } else {
+        response = await fetch("/api/addTodo", requestOptions);
+      }
+  
+      if (!response.ok) {
+        result = await response.json();
         return toast.error(result?.message);
       }
-
-      console.log(todo);
-
-      setTodo("");
+  
+      result = await response.json();
       toast.success(result?.message);
-      GetTodos();
+  
+      if (!editable) {
+        setTodo("");
+        GetTodos();
+      } else {
+        setEditable(false);
+        setEditId(null);
+      }
     } catch (e) {
       const err = e as Error;
       return toast.error(err?.message);
@@ -114,12 +127,12 @@ export default function Todo() {
   };
 
   // HANDLE: Edit Todos
-  // const handleEdit = (todoId: number) => {
-  //   setEditId(todoId);
-  //   setEditable((prev) => !prev);
-  //   const myTodo = todos?.find((i) => i.id === todoId);
-  //   setTodo(!editable ? (myTodo?.todo as string) : "");
-  // };
+  const handleEdit = (todoId: string) => {
+    setEditId(todoId);
+    setEditable((prev) => !prev);
+    const myTodo = todos?.find((i) => i._id === todoId);
+    setTodo(!editable ? (myTodo?.todo as string) : "");
+  };
   return (
     <section className="min-h-screen">
       {/* Todo Form */}
@@ -175,7 +188,7 @@ export default function Todo() {
             <div className="flex items-center gap-5">
               {/* Edit Button */}
               <button
-                // onClick={() => handleEdit(todo?.id)}
+                onClick={() => handleEdit(todo?._id)}
                 type="button"
                 className="rounded-md btn btn-error"
               >

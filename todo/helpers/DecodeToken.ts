@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 export const DecodeToken = () => {
   try {
-    const token = cookies().get("todoAuth")?.value || "";
+    const token = cookies().get("todoAuth")?.value;
     if (!token) {
       return console.log('No Authorization Token Found.')
     }
@@ -14,6 +14,7 @@ export const DecodeToken = () => {
         return user;
       }
     });
+    console.log('decoded-data', data)
     return data;
   } catch (error) {
     return console.log("Something went wrong. Failed to Authenticate the user");

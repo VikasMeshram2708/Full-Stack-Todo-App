@@ -6,9 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 export const GET = async (req: NextRequest) => {
   try {
     const data = DecodeToken();
+    console.log(data);
 
     // @ts-ignore
     const userId = data?.id;
+    console.log(userId);
+    // 66043a62276b9b9ee36a1164
 
     // Connect to DB
     await clientInstance.connect();

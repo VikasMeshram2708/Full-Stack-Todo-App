@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { ZodError } from "zod";
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -14,7 +15,6 @@ export const POST = async (req: NextRequest) => {
 
     // Sanitize the Incoming data
     LoginSchema.parse(reqBody);
-    Promise.resolve();
 
     // Connect to DB
     await clientInstance.connect();
@@ -86,7 +86,18 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json(
         {
           success: false,
-          message: `Something went wrong. Failed to Register the user. : ${e}`,
+          message: `Something went wrong. Failed to Login the user. : ${e}`,
+        },
+        {
+          status: 500,
+        }
+      );
+    }
+    if (e instanceof ZodError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Something went wrong. Failed to Login the user. : ${e?.errors[0]?.message}`,
         },
         {
           status: 500,
@@ -96,7 +107,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json(
       {
         success: false,
-        message: `Something went wrong. Failed to Register the user. : ${err?.message}`,
+        message: `Something went wrong. Failed to Login the user. : ${err?.message}`,
       },
       {
         status: 500,
